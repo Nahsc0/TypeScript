@@ -1,18 +1,24 @@
 "use strict";
-class Task {
-    constructor(name, completed) {
-        this.name = name;
-        this.completed = completed;
-    }
-}
-const taskList = [];
+let taskList = [];
 function addTask() {
     const taskInput = document.getElementById('taskInput');
+    const dueDateInput = document.getElementById('dueDateInput');
+    const prioritySelect = document.getElementById('prioritySelect');
     const taskName = taskInput.value.trim();
+    const dueDate = dueDateInput.value;
+    const priority = prioritySelect.value;
     if (taskName !== '') {
-        const newTask = new Task(taskName, false);
+        const newTask = {
+            name: taskName,
+            completed: false,
+            category: '',
+            dueDate: dueDate,
+            priority: priority,
+        };
         taskList.push(newTask);
         taskInput.value = '';
+        dueDateInput.value = '';
+        prioritySelect.value = 'low';
         renderTasks();
     }
 }
@@ -24,10 +30,17 @@ function deleteTask(index) {
     taskList.splice(index, 1);
     renderTasks();
 }
-function renderTasks() {
+function searchTasks() {
+    const searchInput = document.getElementById('searchInput');
+    const searchTerm = searchInput.value.toLowerCase();
+    const filteredTasks = taskList.filter((task) => task.name.toLowerCase().includes(searchTerm) ||
+        task.category.toLowerCase().includes(searchTerm));
+    renderTasks(filteredTasks);
+}
+function renderTasks(tasksToShow = taskList) {
     const taskListElement = document.getElementById('taskList');
     taskListElement.innerHTML = '';
-    taskList.forEach((task, index) => {
+    tasksToShow.forEach((task, index) => {
         const li = document.createElement('li');
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';

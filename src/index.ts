@@ -1,17 +1,35 @@
-class Task {
-    constructor(public name: string, public completed: boolean) {}
+interface Task {
+    name: string;
+    completed: boolean;
+    category: string;
+    dueDate: string;
+    priority: string;
 }
 
-const taskList: Task[] = [];
+let taskList: Task[] = [];
 
 function addTask() {
     const taskInput = document.getElementById('taskInput') as HTMLInputElement;
+    const dueDateInput = document.getElementById('dueDateInput') as HTMLInputElement;
+    const prioritySelect = document.getElementById('prioritySelect') as HTMLSelectElement;
+
     const taskName = taskInput.value.trim();
+    const dueDate = dueDateInput.value;
+    const priority = prioritySelect.value;
 
     if (taskName !== '') {
-        const newTask = new Task(taskName, false);
+        const newTask: Task = {
+            name: taskName,
+            completed: false,
+            category: '',
+            dueDate: dueDate,
+            priority: priority,
+        };
+
         taskList.push(newTask);
         taskInput.value = '';
+        dueDateInput.value = '';
+        prioritySelect.value = 'low';
         renderTasks();
     }
 }
@@ -26,11 +44,23 @@ function deleteTask(index: number) {
     renderTasks();
 }
 
-function renderTasks() {
+function searchTasks() {
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    const searchTerm = searchInput.value.toLowerCase();
+
+    const filteredTasks = taskList.filter((task) =>
+        task.name.toLowerCase().includes(searchTerm) ||
+        task.category.toLowerCase().includes(searchTerm)
+    );
+
+    renderTasks(filteredTasks);
+}
+
+function renderTasks(tasksToShow: Task[] = taskList) {
     const taskListElement = document.getElementById('taskList') as HTMLUListElement;
     taskListElement.innerHTML = '';
 
-    taskList.forEach((task, index) => {
+    tasksToShow.forEach((task, index) => {
         const li = document.createElement('li');
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
